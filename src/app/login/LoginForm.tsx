@@ -12,9 +12,16 @@ export default function LoginForm() {
     if (code) {
       console.log('Received code:', code);
       console.log('State:', state);
-      alert('登录成功！code: ' + code);
+      window.location.href = '/api/auth/callback?code=' + code + (state ? '&state=' + state : '');
     }
   }, [code, state]);
+
+  const handleLogin = () => {
+    const appId = process.env.NEXT_PUBLIC_FEISHU_APP_ID || 'cli_aa8b86cea7391cd5';
+    const redirectUri = encodeURIComponent(window.location.origin + '/login');
+    const oauthUrl = `https://open.feishu.cn/open-apis/authen/v1/authorize?app_id=${appId}&redirect_uri=${redirectUri}&state=random_state`;
+    window.location.href = oauthUrl;
+  };
 
   return (
     <div className="max-w-md mx-auto px-6 py-16">
@@ -33,11 +40,7 @@ export default function LoginForm() {
       <div className="card">
         <button 
           className="btn btn-primary w-full"
-          onClick={() => {
-            const redirectUri = encodeURIComponent(window.location.origin + '/login');
-            const oauthUrl = `https://open.feishu.cn/open-apis/authen/v1/authorize?app_id=YOUR_APP_ID&redirect_uri=${redirectUri}&state=random_state`;
-            window.location.href = oauthUrl;
-          }}
+          onClick={handleLogin}
         >
           使用飞书登录
         </button>
