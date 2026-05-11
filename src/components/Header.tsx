@@ -6,7 +6,6 @@ import type { User } from '@/types';
 
 export default function Header() {
   const [user, setUser] = useState<User | null>(null);
-  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const userCookie = document.cookie
@@ -21,13 +20,6 @@ export default function Header() {
         setUser(null);
       }
     }
-
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleLogout = () => {
@@ -36,63 +28,43 @@ export default function Header() {
   };
 
   return (
-    <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'glass shadow-lg' : 'bg-transparent'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold shadow-lg group-hover:shadow-indigo-500/30 transition-shadow">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-lg">
             🤖
           </div>
-          <div>
-            <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              智能体广场
-            </span>
-            <p className="text-xs text-gray-500 -mt-1">AI Agent Square</p>
-          </div>
+          <span className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            智能体广场
+          </span>
         </Link>
         
-        <nav className="flex items-center gap-8">
-          <Link 
-            href="/" 
-            className="text-gray-600 hover:text-indigo-600 font-medium transition-colors relative group"
-          >
+        <nav className="flex items-center gap-6">
+          <Link href="/" className="text-gray-600 hover:text-indigo-600 font-medium transition-colors">
             广场
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
           </Link>
           
           {user ? (
             <>
-              <Link 
-                href="/agent/create" 
-                className="btn btn-primary"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <Link href="/agent/create" className="btn btn-primary">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
                 创建智能体
               </Link>
               
               <div className="relative group">
-                <div className="flex items-center gap-3 cursor-pointer">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm shadow-lg">
+                <button className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold">
                     {user.name?.charAt(0) || '?'}
                   </div>
-                  <div className="text-left">
-                    <p className="text-sm font-semibold text-gray-700">{user.name}</p>
-                    <p className="text-xs text-gray-400">已登录</p>
-                  </div>
-                  <svg className="w-4 h-4 text-gray-400 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
+                  <span className="text-sm font-medium text-gray-700">{user.name}</span>
+                </button>
                 
-                <div className="absolute right-0 mt-2 w-48 py-2 bg-white rounded-xl shadow-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <div className="absolute right-0 mt-2 w-40 py-2 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                   <button 
                     onClick={handleLogout}
-                    className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-red-50 rounded"
                   >
                     退出登录
                   </button>
@@ -101,9 +73,6 @@ export default function Header() {
             </>
           ) : (
             <Link href="/login" className="btn btn-primary">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0L7 10m4 6l4-4m-4 6l4-4" />
-              </svg>
               登录
             </Link>
           )}
