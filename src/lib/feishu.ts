@@ -1,6 +1,6 @@
 import type { User } from '@/types';
 
-const FEISHU_APP_ID = process.env.NEXT_PUBLIC_FEISHU_APP_ID || '';
+const FEISHU_APP_ID = process.env.FEISHU_APP_ID || '';
 const FEISHU_APP_SECRET = process.env.FEISHU_APP_SECRET || '';
 
 export async function getFeishuAccessToken(): Promise<string> {
@@ -54,15 +54,17 @@ export function generateOAuthUrl(redirectUri: string, state: string = ''): strin
 }
 
 export async function exchangeCodeForUser(code: string): Promise<User> {
-  const token = await getFeishuAccessToken();
-  
-  const response = await fetch('https://open.feishu.cn/open-apis/authen/v1/oidc/access_token', {
+  const response = await fetch('https://open.feishu.cn/open-apis/authen/v1/access_token', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ grant_type: 'authorization_code', code }),
+    body: JSON.stringify({
+      app_id: FEISHU_APP_ID,
+      app_secret: FEISHU_APP_SECRET,
+      grant_type: 'authorization_code',
+      code,
+    }),
   });
   
   const data = await response.json();
@@ -70,11 +72,11 @@ export async function exchangeCodeForUser(code: string): Promise<User> {
   if (data.code === 0) {
     return {
       id: data.data.open_id,
-      name: data.data.name,
+      name: data.data.name || data.data.open_id,
       avatar: data.data.avatar_url,
       email: data.data.email,
     };
   }
   
-  throw new Error(data.msg);
+  throw new Error(data.msg || 'OAuth failed');
 }

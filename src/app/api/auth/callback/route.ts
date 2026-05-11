@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { feishuAuth, getUserInfo } from '@/lib/feishu';
+import { exchangeCodeForUser } from '@/lib/feishu';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,22 +10,14 @@ export async function GET(request: Request) {
   }
   
   try {
-    const token = await feishuAuth(code);
-    const userInfo = await getUserInfo(token.access_token);
+    const userInfo = await exchangeCodeForUser(code);
     
     const response = NextResponse.redirect(new URL('/', process.env.BASE_URL));
-    
-    response.cookies.set('access_token', token.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: token.expires_in,
-      path: '/',
-    });
     
     response.cookies.set('user', JSON.stringify(userInfo), {
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: token.expires_in,
+      maxAge: 86400,
       path: '/',
     });
     
