@@ -5,20 +5,21 @@ import { useSearchParams } from 'next/navigation';
 
 export default function LoginForm() {
   const searchParams = useSearchParams();
-  const code = searchParams.get('code');
-  const state = searchParams.get('state');
+  const error = searchParams.get('error');
 
   useEffect(() => {
+    const code = searchParams.get('code');
+    const state = searchParams.get('state');
+    
     if (code) {
       console.log('Received code:', code);
-      console.log('State:', state);
       window.location.href = '/api/auth/callback?code=' + code + (state ? '&state=' + state : '');
     }
-  }, [code, state]);
+  }, [searchParams]);
 
   const handleLogin = () => {
     const appId = process.env.NEXT_PUBLIC_FEISHU_APP_ID || 'cli_aa8b86cea7391cd5';
-    const redirectUri = encodeURIComponent(window.location.origin + '/login');
+    const redirectUri = encodeURIComponent(window.location.origin + '/api/auth/callback');
     const oauthUrl = `https://open.feishu.cn/open-apis/authen/v1/authorize?app_id=${appId}&redirect_uri=${redirectUri}&state=random_state`;
     window.location.href = oauthUrl;
   };
@@ -36,6 +37,12 @@ export default function LoginForm() {
           使用飞书账号登录，开始使用AI智能体
         </p>
       </div>
+
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 text-red-500 rounded-lg text-sm">
+          登录失败，请重试
+        </div>
+      )}
 
       <div className="card">
         <button 

@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   try {
     const userInfo = await exchangeCodeForUser(code);
     
-    const response = NextResponse.redirect(new URL('/', process.env.BASE_URL));
+    const response = NextResponse.redirect(new URL('/', process.env.BASE_URL || 'http://localhost:3000'));
     
     response.cookies.set('user', JSON.stringify(userInfo), {
       httpOnly: false,
@@ -24,6 +24,6 @@ export async function GET(request: Request) {
     return response;
   } catch (error) {
     console.error('Auth error:', error);
-    return NextResponse.redirect(new URL('/login?error=auth_failed', process.env.BASE_URL));
+    return NextResponse.redirect(new URL('/login?error=auth_failed', process.env.BASE_URL || 'http://localhost:3000'));
   }
 }
